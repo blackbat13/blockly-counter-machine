@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Blockly Demo: Counter Machine</title>
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="node_modules/blockly/blockly_compressed.js"></script>
+    <script src="node_modules/blockly/blocks_compressed.js"></script>
+    <script src="node_modules/blockly/javascript_compressed.js"></script>
+    <script src="node_modules/blockly/msg/js/en.js"></script>
+    <script src="counter-machine-blocks.js"></script>
+    <style>
+        body {
+            background-color: #fff;
+            font-family: sans-serif;
+            margin-top: 10px;
+        }
+
+        h1 {
+            font-weight: normal;
+            font-size: 140%;
+        }
+
+        #machine-form input, #output-form input {
+            width: 50px;
+            margin-right: 10px;
+            margin-left: 2px;
+            text-align: center;
+        }
+
+        #machine-form label, #output-form label {
+            font-weight: bold;
+        }
+
+        #input-row {
+            padding: 20px 0;
+            background-color: beige;
+        }
+
+        #output-row {
+            padding: 20px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <header>
+        <div class="row">
+            <div class="col-12">
+                <h1><a href="https://developers.google.com/blockly/">Blockly</a> &gt;
+                    <a href="../index.html">Demos</a> &gt; Counter Machine</h1>
+            </div>
+        </div>
+    </header>
+    <div class="row">
+        <div class="col-12">
+            <div id="blocklyDiv" style="height: 480px; width: 600px;"></div>
+
+            <xml id="toolbox" style="display: none">
+                <block type="z"></block>
+                <block type="s"></block>
+                <block type="t"></block>
+                <block type="i"></block>
+            </xml>
+        </div>
+    </div>
+    <div class="row" id="input-row">
+        <div class="col-10">
+            <h1>Input</h1>
+            <form id="machine-form">
+                <label for="machine-input-0">0:</label>
+                <input id="machine-input-0" type="number" value=0>
+            </form>
+        </div>
+        <div class="col-2">
+            <button class="btn btn-primary" id="btn-add-input">Add input</button>
+        </div>
+    </div>
+    <div class="row" id="output-row">
+        <div class="col-10" id="machine-output">
+            <h1>Output</h1>
+            <form id="output-form">
+            </form>
+        </div>
+        <div class="col-2">
+            <button class="btn btn-primary" id="btn-run">Run</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).init(function () {
+        var instructions = [];
+        var machine = [];
+        var no_inputs = 1;
+        var workspace = Blockly.inject('blocklyDiv',
+            {
+                media: 'node_modules/blockly/media/',
+                toolbox: document.getElementById('toolbox')
+            });
+
+        var $machine_form = $('#machine-form');
+        var $machine_output = $('#output-form');
+        var limit = 10000;
+
+        $('#btn-run').click(function () {
+            var code = Blockly.JavaScript.workspaceToCode(workspace);
+
+            instructions = code.split('\n');
+            instructions.pop(); // Last element is empty, so remove it
+            console.log(instructions);
+            run(); // Run the machine!
+        });
+
+        $("#btn-add-input").click(function () {
+            $machine_form.append('<label for="machine-input-' + no_inputs + '">' + no_inputs + ':</label>');
+            $machine_form.append('<input id="machine-input-' + no_inputs + '" type="number" value=0>');
+            no_inputs++;
+        });
+
+        function load_machine_input() {
+            for (var i = 0; i < no_inputs; ++i) {
+                machine[i] = parseInt($('#machine-input-' + i).val());
+            }
+        }
+
+        function print_machine() {
+            $machine_output.html('');
+            for (var i = 0; i < machine.length; ++i) {
+                $machine_output.append('<label for="machine-output-' + i + '">' + i + ':</label>');
+                $machine_output.append('<input id="machine-output-' + i + '" type="number" disabled value=' + machine[i] + '>');
+            }
+        }
+
+        function print_error() {
+            alert("Error: number of iterations > " + limit);
+        }
+
+        function run() {
+            machine = [];
+            load_machine_input();
+            var current_instruction = 0;
+            var no_iteration = 0;
+            while (current_instruction < instructions.length && no_iteration < limit) {
+                no_iteration++;
+                eval(instructions[current_instruction]);
+                current_instruction++;
+            }
+
+            if (no_iteration >= limit) {
+                print_error();
+            }
+
+            print_machine();
+        }
+    });
+
+</script>
+
+</body>
+</html>
