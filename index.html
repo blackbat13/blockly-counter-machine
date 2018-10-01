@@ -10,6 +10,7 @@
     <script src="node_modules/blockly/blocks_compressed.js"></script>
     <script src="node_modules/blockly/javascript_compressed.js"></script>
     <script src="node_modules/blockly/msg/js/en.js"></script>
+    <script src="node_modules/blockly/appengine/storage.js"></script>
     <script src="counter-machine-blocks.js"></script>
     <style>
         body {
@@ -92,6 +93,52 @@
             <button class="btn btn-primary" id="btn-run">Run</button>
         </div>
     </div>
+    <div class="row">
+        <div class="col-6">
+            <button class="btn btn-primary" id="btn-save">Save</button>
+        </div>
+        <div class="col-6">
+            <button class="btn btn-primary" id="btn-load" data-toggle="modal" data-target="#loadModal">Load</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="saveModal" tabindex="-1" role="dialog" aria-labelledby="saveModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="saveModalLabel">Copy and save following data</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="saveData">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="loadModal" tabindex="-1" role="dialog" aria-labelledby="loadModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loadModalLabel">Paste data</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <textarea id="loadData"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="loadDataBtn">Load</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -170,6 +217,26 @@
 
             print_machine();
         }
+
+        function save_blocks() {
+            var xml = Blockly.Xml.workspaceToDom(workspace);
+            return Blockly.Xml.domToText(xml);
+        }
+
+        function load_blocks(text) {
+            var xml = Blockly.Xml.textToDom(text);
+            Blockly.Xml.domToWorkspace(xml, workspace);
+        }
+
+        $('#btn-save').click(function() {
+            $('#saveData').text(save_blocks());
+            $('#saveModal').modal();
+        });
+
+        $('#loadDataBtn').click(function() {
+            var text = $('#loadData').val();
+            load_blocks(text);
+        });
     });
 
 </script>
