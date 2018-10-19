@@ -92,7 +92,7 @@
         <div class="col-md-1">
             <h1>Input</h1>
             <form id="machine-form">
-                <label for="machine-input-0">0:</label><input id="machine-input-0" type="number" value=0>
+                <label for="machine-input-1">1:</label><input id="machine-input-1" type="number" value=0>
             </form>
         </div>
         <div class="col-md-1">
@@ -193,7 +193,7 @@
 
         function print_machine() {
             $machine_output.html('');
-            for (var i = 0; i < machine.length; ++i) {
+            for (var i = 1; i < machine.length; ++i) {
                 $machine_output.append('<label for="machine-output-' + i + '">' + i + ':</label>');
                 $machine_output.append('<input id="machine-output-' + i + '" type="number" disabled value=' + machine[i] + '>');
             }
