@@ -11,7 +11,7 @@ var clrJson = {
             "type": "field_number",
             "name": "index",
             "value": 1,
-            "min": 1,
+            "min": 0,
             "precision": 1
         }
     ],
@@ -31,7 +31,7 @@ var zJson = {
             "type": "field_number",
             "name": "index",
             "value": 1,
-            "min": 1,
+            "min": 0,
             "precision": 1
         }
     ],
@@ -52,7 +52,7 @@ var incJson = {
             "type": "field_number",
             "name": "index",
             "value": 1,
-            "min": 1,
+            "min": 0,
             "precision": 1
         }
     ],
@@ -72,7 +72,7 @@ var sJson = {
             "type": "field_number",
             "name": "index",
             "value": 1,
-            "min": 1,
+            "min": 0,
             "precision": 1
         }
     ],
@@ -91,7 +91,7 @@ var decJson = {
             "type": "field_number",
             "name": "index",
             "value": 1,
-            "min": 1,
+            "min": 0,
             "precision": 1
         }
     ],
@@ -110,14 +110,14 @@ var cpyJson = {
             "type": "field_number",
             "name": "index1",
             "value": 1,
-            "min": 1,
+            "min": 0,
             "precision": 1
         },
         {
             "type": "field_number",
             "name": "index2",
             "value": 1,
-            "min": 1,
+            "min": 0,
             "precision": 1
         }
     ],
@@ -136,14 +136,14 @@ var tJson = {
             "type": "field_number",
             "name": "index1",
             "value": 1,
-            "min": 1,
+            "min": 0,
             "precision": 1
         },
         {
             "type": "field_number",
             "name": "index2",
             "value": 1,
-            "min": 1,
+            "min": 0,
             "precision": 1
         }
     ],
@@ -162,14 +162,14 @@ var jzJson = {
             "type": "field_number",
             "name": "index",
             "value": 1,
-            "min": 1,
+            "min": 0,
             "precision": 1
         },
         {
             "type": "field_number",
             "name": "instruction",
             "value": 1,
-            "min": 1,
+            "min": 0,
             "precision": 1
         }
     ],
@@ -186,14 +186,14 @@ var jeJson = {
             "type": "field_number",
             "name": "index1",
             "value": 1,
-            "min": 1,
+            "min": 0,
             "precision": 1
         },
         {
             "type": "field_number",
             "name": "index2",
             "value": 1,
-            "min": 1,
+            "min": 0,
             "precision": 1
         },
         {
@@ -219,14 +219,14 @@ var iJson = {
             "type": "field_number",
             "name": "index1",
             "value": 1,
-            "min": 1,
+            "min": 0,
             "precision": 1
         },
         {
             "type": "field_number",
             "name": "index2",
             "value": 1,
-            "min": 1,
+            "min": 0,
             "precision": 1
         },
         {

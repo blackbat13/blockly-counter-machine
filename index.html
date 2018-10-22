@@ -193,7 +193,7 @@
 
         function print_machine() {
             $machine_output.html('');
-            for (var i = 1; i < machine.length; ++i) {
+            for (var i = 0; i < machine.length; ++i) {
                 $machine_output.append('<label for="machine-output-' + i + '">' + i + ':</label>');
                 $machine_output.append('<input id="machine-output-' + i + '" type="number" disabled value=' + machine[i] + '>');
             }
