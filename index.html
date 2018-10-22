@@ -115,6 +115,11 @@
             </div>
             <div class="row">
                 <div class="col-12">
+                    <button class="btn btn-lg btn-primary" id="btn-run-slow">Slow Run</button><br>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
                     <button class="btn btn-lg btn-danger" id="btn-load" data-toggle="modal" data-target="#loadModal">Load</button><br>
                 </div>
             </div>
@@ -184,7 +189,19 @@
                 toolbox: document.getElementById('toolbox')
             });
 
+        var current_instruction = 0;
+        var no_iteration = 0;
+        var slow_run = false;
+        var iteration_speed = 1000;
+
         workspace.toolbox_.flyout_.autoClose = false;
+        Blockly.JavaScript.STATEMENT_PREFIX = 'highlightBlock(%1);';
+        Blockly.JavaScript.addReservedWords('highlightBlock');
+
+        function highlightBlock(id) {
+            workspace.getBlockById(id).select();
+            // workspace.highlightBlock(id, false);
+        }
 
         var $machine_form = $('#machine-form');
         var $machine_output = $('#output-form');
@@ -207,8 +224,16 @@
         });
 
         $('#btn-run').click(function () {
+            slow_run = false;
             var code = Blockly.JavaScript.workspaceToCode(workspace);
+            instructions = code.split('\n');
+            console.log(instructions);
+            run(); // Run the machine!
+        });
 
+        $('#btn-run-slow').click(function () {
+            slow_run = true;
+            var code = Blockly.JavaScript.workspaceToCode(workspace);
             instructions = code.split('\n');
             console.log(instructions);
             run(); // Run the machine!
@@ -247,6 +272,8 @@
             alert("Error: number of iterations > " + limit);
         }
 
+
+
         function run() {
             let i = 0;
             while (i < instructions.length) {
@@ -262,19 +289,43 @@
 
             machine = [];
             load_machine_input();
-            var current_instruction = 0;
-            var no_iteration = 0;
-            while (current_instruction < instructions.length && no_iteration < limit) {
-                no_iteration++;
-                eval(instructions[current_instruction]);
-                current_instruction++;
+            current_instruction = 0;
+            no_iteration = 0;
+            if(slow_run === true) {
+                run_step_by_step();
+            } else {
+                while (current_instruction < instructions.length && no_iteration < limit) {
+                    no_iteration++;
+                    eval(instructions[current_instruction]);
+                    current_instruction++;
+                }
+
+                if (no_iteration >= limit) {
+                    print_error();
+                }
+
+                print_machine();
             }
 
-            if (no_iteration >= limit) {
+
+        }
+
+        function run_step_by_step() {
+            if(no_iteration >= limit) {
                 print_error();
+                return;
             }
 
+            if(current_instruction >= instructions.length) {
+                print_machine();
+                return;
+            }
+
+            no_iteration++;
+            eval(instructions[current_instruction]);
             print_machine();
+            current_instruction++;
+            window.setTimeout(run_step_by_step, iteration_speed);
         }
 
         function save_blocks() {
