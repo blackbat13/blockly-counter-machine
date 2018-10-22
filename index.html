@@ -12,6 +12,7 @@
     <script src="node_modules/blockly/msg/js/en.js"></script>
     <script src="node_modules/blockly/appengine/storage.js"></script>
     <script src="counter-machine-blocks.js"></script>
+    <script src="node_modules/bootstrap-input-spinner/src/bootstrap-input-spinner.js"></script>
     <style>
         body {
             background-color: #fff;
@@ -25,23 +26,13 @@
         }
 
         #machine-form input, #output-form input {
-            width: 50px;
-            margin-right: 10px;
-            margin-left: 2px;
-            text-align: center;
+            padding-left: 0.2em;
+            padding-right: 0.1em;
         }
 
-        #machine-form label, #output-form label {
-            font-weight: bold;
-        }
-
-        #input-row {
-            padding: 20px 0;
-            background-color: beige;
-        }
-
-        #output-row {
-            padding: 20px 0;
+        #machine-form .form-group div, #output-form .form-group div {
+            padding-left: 5px;
+            padding-right: 5px;
         }
 
         .btn {
@@ -74,12 +65,12 @@
         </div>
     </header>
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-lg-8">
             <div id="blocklyDiv" style="height: 85vh; width: 100%;">
             </div>
 
             <xml id="toolbox" style="display: none">
-                <category name="Instructions">
+                <category name="Instructions" expanded="true">
                     <block type="z"></block>
                     <block type="s"></block>
                     <block type="t"></block>
@@ -89,23 +80,49 @@
                 <category name="Procedures" custom="PROCEDURE"></category>
             </xml>
         </div>
-        <div class="col-md-1">
+        <div class="col-lg-1">
             <h1>Input</h1>
             <form id="machine-form">
-                <label for="machine-input-1">1:</label><input id="machine-input-1" type="number" value=0>
+                <div class="form-group row">
+                    <label class="col-2 col-form-label" for="machine-input-1">1:</label>
+                    <div class="col-7">
+                        <input class="form-control" id="machine-input-1" type="number" value=0>
+                    </div>
+                </div>
             </form>
         </div>
-        <div class="col-md-1">
+        <div class="col-lg-1">
             <h1>Output</h1>
             <form id="output-form">
             </form>
         </div>
-        <div class="col-md-2">
+        <div class="col-lg-2">
             <h1>Menu</h1>
-            <button class="btn btn-lg btn-warning" id="btn-add-input">Add input</button><br>
-            <button class="btn btn-lg btn-primary" id="btn-run">Run</button><br>
-            <button class="btn btn-lg btn-danger" id="btn-load" data-toggle="modal" data-target="#loadModal">Load</button><br>
-            <button class="btn btn-lg btn-success" id="btn-save">Save</button>
+            <div class="row">
+                <div class="col-12">
+                    <button class="btn btn-lg btn-warning" id="btn-add-input">Set input:</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <input id="machine-input-count" type="number" value=1 min="1" max="100">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <button class="btn btn-lg btn-primary" id="btn-run">Run</button><br>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <button class="btn btn-lg btn-danger" id="btn-load" data-toggle="modal" data-target="#loadModal">Load</button><br>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <button class="btn btn-lg btn-success" id="btn-save">Save</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -160,16 +177,34 @@
     $(document).init(function () {
         var instructions = [];
         var machine = [];
-        var no_inputs = 2;
+        var no_inputs = 1;
         var workspace = Blockly.inject('blocklyDiv',
             {
                 media: 'node_modules/blockly/media/',
                 toolbox: document.getElementById('toolbox')
             });
 
+        workspace.toolbox_.flyout_.autoClose = false;
+
         var $machine_form = $('#machine-form');
         var $machine_output = $('#output-form');
         var limit = 10000;
+        var $machine_input_count = $("#machine-input-count");
+
+        $machine_input_count.inputSpinner();
+
+        $machine_input_count.on("change", function (event) {
+            var newValue = parseInt($(this).val());
+            var minCount = parseInt($machine_input_count.attr("min"));
+            var maxCount = parseInt($machine_input_count.attr("max"));
+            if(newValue > maxCount) {
+                $(this).val(maxCount);
+            }
+
+            if(newValue < minCount) {
+                $(this).val(minCount);
+            }
+        });
 
         $('#btn-run').click(function () {
             var code = Blockly.JavaScript.workspaceToCode(workspace);
@@ -180,13 +215,23 @@
         });
 
         $("#btn-add-input").click(function () {
-            $machine_form.append('<label for="machine-input-' + no_inputs + '">' + no_inputs + ':</label>');
-            $machine_form.append('<input id="machine-input-' + no_inputs + '" type="number" value=0>');
-            no_inputs++;
+            var new_no_inputs = parseInt($machine_input_count.val());
+            if(new_no_inputs > no_inputs) {
+                for(var i = no_inputs + 1; i <= new_no_inputs; ++i) {
+                    $machine_form.append('<div class="form-group row"><label class="col-2 col-form-label" for="machine-input-'+i+'">'+i+':</label><div class="col-7"><input class="form-control" id="machine-input-'+i+'" type="number" value=0></div></div>')
+                }
+            } else if (new_no_inputs < no_inputs) {
+                for(var i = no_inputs; i > new_no_inputs; --i) {
+                    $machine_form.children().last().remove();
+                }
+            }
+
+            no_inputs = new_no_inputs;
         });
 
         function load_machine_input() {
-            for (var i = 0; i < no_inputs; ++i) {
+            machine[0] = 0;
+            for (var i = 1; i <= no_inputs; ++i) {
                 machine[i] = parseInt($('#machine-input-' + i).val());
             }
         }
@@ -194,8 +239,7 @@
         function print_machine() {
             $machine_output.html('');
             for (var i = 0; i < machine.length; ++i) {
-                $machine_output.append('<label for="machine-output-' + i + '">' + i + ':</label>');
-                $machine_output.append('<input id="machine-output-' + i + '" type="number" disabled value=' + machine[i] + '>');
+                $machine_output.append('<div class="form-group row"><label class="col-2 col-form-label" for="machine-output-'+i+'">'+i+':</label><div class="col-7"><input class="form-control" id="machine-output-'+i+'" disabled type="number" value='+ machine[i] +'></div></div>')
             }
         }
 
